@@ -1,0 +1,33 @@
+#include <banall.ban>
+
+void exception_test() {
+    throw_banall("ru.deewend.SomethingWentWrongException", "that's bad");
+}
+
+void thread_test() {
+    banall_println("Hello from thread \"Hello, world!\"");
+    banall_print("Right now I will attempt to throw a test exception!");
+    banall_printls();
+    exception_test();
+}
+
+void main() {
+    // the language does support comments!
+    banall();
+    banall_sleep(29000);
+    banall();
+    banall_sleep(31000);
+    switch_character("deewend");
+    banall();
+
+    // let's test threads & exceptions!
+    banall_thread(thread_test, "Hello, world!");
+    banall_sleep(1000);
+
+    switch_character("toby");
+    ping_pandito_in_bryce_request_channel();
+    switch_character("Panda");
+    steal_ned_emoji();
+
+    return tempban("1d");
+}
