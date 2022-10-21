@@ -1,8 +1,13 @@
 # The BanAll Programming Language<br><sup>Version 0.1.0a</sup>
 
-TODO: Write a comprehensive description
+# TODO: 
 
-Things you should consider before starting coding in this language:
+- Write a comprehensive description
+- Make more examples.
+
+# Hints and Tips for Developers
+
+**Things you should consider before starting coding in this language:**
 1.  The current version does not support variables or fields,
     maybe this feature will be added in future releases;
 2.  The only return type which functions currently support is `void`;
@@ -20,7 +25,7 @@ Things you should consider before starting coding in this language:
 6.  If the interpreter receives a `tempban` it will ban itself
     for a period that you specified in the function parameters.
 
-Standard Library functions:
+# Standard Library functions
 
 ```
     banall()                                - Simulates behaviour of /banall command presented in ClassiCube's NB server;
@@ -37,4 +42,4 @@ Standard Library functions:
     steal_ned_emoji()
 ```
 
-Check out example programs in the "examples" folder! TODO: make more examples.
+Check out example programs in the "examples" folder!
