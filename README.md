@@ -1,10 +1,4 @@
------------------------------------------------
-
-        The BanAll Programming Language
-        
-        v0.1.0a
-        
------------------------------------------------
+# The BanAll Programming Language<br><sup>Version 0.1.0a</sup>
 
 TODO: Write a comprehensive description
 
