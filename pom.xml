@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.deewend</groupId>
     <artifactId>banalllang</artifactId>
-    <version>1.0</version>
+    <version>0.1.0a</version>
     
     <properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
