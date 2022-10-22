@@ -5,6 +5,9 @@
 - Write a comprehensive description
 - Make more examples.
 
+# Download
+There's two options, either running `mvn package` or downloading the [latest artifact from CI](https://nightly.link/minecraft8997/banall-lang/workflows/build/master/builds.zip).
+
 # Hints and Tips for Developers
 
 **Things you should consider before starting coding in this language:**
