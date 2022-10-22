@@ -6,9 +6,11 @@ import ru.deewend.banalllang.funcresult.BanAllFunctionResult;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
 
 public class StandardBanAllFunctions {
     private static final Object CHAT_SIMULATION_LOCK = new Object();
@@ -16,8 +18,18 @@ public class StandardBanAllFunctions {
     private static volatile String currentCharacter;
     private static volatile long lastCalledBanAll;
 
-    private StandardBanAllFunctions() {
-    }
+    // TODO: Eventually entierly remove this and autogenerate it via reflections
+    private static String[] arrayFunctions = {
+        "banall", "banall_thread", "banall_sleep", 
+        "banall_println", "banall_printls", "banall_print", 
+        "throw_banall", "return", "switch_character",
+        "ping_pandito_in_bryce_request_channel", "steal_ned_emoji", "tempban"
+    };
+
+    public static List<String> functions = Arrays.asList(arrayFunctions);
+
+
+    private StandardBanAllFunctions() {}
 
     public static BanAllFunctionResult banall() {
         synchronized (StandardBanAllFunctions.class) {
@@ -103,6 +115,7 @@ public class StandardBanAllFunctions {
                     "banall.runtime.CharacterNotSetError", "currentCharacter == null"
             );
         }
+
         if (currentCharacter.equals("Panda")) {
             return new BanAllEmptyResult();
         }

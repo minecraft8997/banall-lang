@@ -1,18 +1,38 @@
 package ru.deewend.banalllang;
 
-import ru.deewend.banalllang.funcresult.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
-import java.io.*;
-import java.util.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import ru.deewend.banalllang.funcresult.BanAllEmptyResult;
+import ru.deewend.banalllang.funcresult.BanAllException;
+import ru.deewend.banalllang.funcresult.BanAllFunctionResult;
+import ru.deewend.banalllang.funcresult.BanAllResultTempban;
+import ru.deewend.banalllang.funcresult.BanAllReturnStatement;
 
 public class BanAllLangInterpreter {
     public static final String VERSION = "0.1.0a";
 
     private final List<String> lines;
     private int currentLineNumber;
-    private boolean importedBanall;
     private List<BanAllFunction> functionList;
     private final List<Thread> threadList;
+    private static File root;
+    private boolean importedBanall;
 
     public BanAllLangInterpreter(List<String> lines) {
         this.lines = Collections.unmodifiableList(new ArrayList<>(lines));
@@ -29,32 +49,32 @@ public class BanAllLangInterpreter {
 
         List<String> lines = new ArrayList<>();
 
-        String filename = args[0];
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+        root = new File(args[0]);
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(root))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
             }
         } catch (IOException e) {
-            System.out.println("Failed to read " + filename + " file");
-
+            System.out.println("Failed to read " + root + " file");
             return;
         }
 
         int status;
         try {
-            status = new BanAllLangInterpreter(lines).evaluate();
+            status = new BanAllLangInterpreter(lines).evaluate(false);
         } catch (Throwable t) {
             System.err.println("banall.external.SomethingWentWrongError: " +
                     "something went wrong :(");
-            BAN("1w", "just because something went wrong");
 
+            BAN("1w", "just because something went wrong");
             return;
         }
         if (status == -1) BAN("1w", "parse error");
     }
 
-    private int evaluate() {
+    private int evaluate(Boolean dontStart) {
         functionList = new ArrayList<>();
         BanAllFunction currentFunction = null;
 
@@ -74,30 +94,65 @@ public class BanAllLangInterpreter {
 
                     return -1;
                 }
+
                 String nextToken = tokenizer.nextToken();
-                if (!nextToken.equals("<banall.ban>")) {
-                    System.err.println(ln() + "banall.lang.ParseError: " +
-                            "unknown package name (" + nextToken + ")");
-
-                    return -1;
-                }
-                if (importedBanall) {
-                    System.err.println(ln() +
-                            "banall.lang.ParseError: this package is already imported!");
-
-                    return -1;
-                }
 
                 if (tokenizer.hasMoreTokens()) {
+                    System.err.println(ln() + "banall.lang.ParseError: invalid statement");
+                    return -1;
+                }
+                
+                String name = nextToken
+                    .replace("<", "")
+                    .replace(">", "")
+                    .replaceAll("\\.(?!ban)", "/");
+
+                // TODO: Please help (1/4)
+                if (nextToken.equals("<banall.ban>")) {
+                    if (importedBanall) {
+                        System.err.println(ln() +
+                                "banall.lang.ParseError: this package is already imported!");
+                        return -1;
+                    }
+
+                    importedBanall = true;
+                    continue;
+                }
+
+                if(!name.endsWith(".ban")) name += ".ban";
+
+                Path path = Paths.get(root.getParentFile().getAbsolutePath(), name);
+
+                List<String> fileLines = new ArrayList<>();
+                                if (tokenizer.hasMoreTokens()) {
                     System.err.println(ln() + "banall.lang.ParseError: invalid statement");
 
                     return -1;
                 }
+                
+                try (BufferedReader reader = new BufferedReader(new FileReader(path.normalize().toString()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        fileLines.add(line);
+                    }
+                } catch (IOException e) {
+                    return -1;
+                }
 
-                importedBanall = true;
+                try {
+                    BanAllLangInterpreter interperter = new BanAllLangInterpreter(fileLines);
 
+                    interperter.evaluate(true);
+                    
+                    this.functionList.addAll(interperter.functionList);
+                    this.threadList.addAll(interperter.threadList);
+                } catch (Throwable t) {
+                    return -1;
+                }
+                
                 continue;
             }
+
             if (token.equals("void")) {
                 if (!tokenizer.hasMoreTokens()) {
                     System.err.println(ln() + "banall.lang.ParseError: invalid statement");
@@ -125,24 +180,16 @@ public class BanAllLangInterpreter {
 
                     return -1;
                 }
-                switch (name) {
-                    case "banall":
-                    case "banall_thread":
-                    case "banall_sleep":
-                    case "banall_println":
-                    case "banall_printls":
-                    case "banall_print":
-                    case "throw_banall":
-                    case "return":
-                    case "switch_character":
-                    case "ping_pandito_in_bryce_request_channel":
-                    case "steal_ned_emoji":
-                        System.err.println(ln() + "banall.lang.ParseError: " +
-                                "function \"" + name + "\" is already defined " +
-                                "(it comes from the standard library)");
+                // TODO: Please help (2/4)
 
-                        return -1;
+                if(StandardBanAllFunctions.functions.contains(name) && importedBanall) {
+                    System.err.println(ln() + "banall.lang.ParseError: " +
+                    "function \"" + name + "\" is already defined " +
+                    "(it comes from the standard library)");
+
+                    return -1;
                 }
+            
                 for (BanAllFunction function : functionList) {
                     if (function.getName().equals(name)) {
                         System.err.println(ln() + "banall.lang.ParseError: " +
@@ -400,27 +447,30 @@ public class BanAllLangInterpreter {
             }
         }
 
+        // TODO: Please help (3/4)
         if (!importedBanall) {
             System.err.println(ln() + "");
 
             return -1;
         }
 
-        BanAllFunctionResult result = invokeFunction(
-                "main", false, null
-        );
 
-        waitUntilAllThreadsFinish();
-
-        if (!(result instanceof BanAllResultTempban)) {
-            BAN("1w", "did NOT return a tempban in main() method");
-        } else {
-            BAN(
-                    ((BanAllResultTempban) result).getDuration(),
-                    "this duration was specified in return statement"
+        if(!dontStart) {
+            BanAllFunctionResult result = invokeFunction(
+                    "main", false, null
             );
-        }
 
+            waitUntilAllThreadsFinish();
+
+            if (!(result instanceof BanAllResultTempban)) {
+                BAN("1w", "did NOT return a tempban in main() method");
+            } else {
+                BAN(
+                        ((BanAllResultTempban) result).getDuration(),
+                        "this duration was specified in return statement"
+                );
+            }
+        }
         return 0;
     }
 
@@ -484,13 +534,16 @@ public class BanAllLangInterpreter {
         char unit = duration.charAt(1);
         if (
                 (digit < '1' || digit > '9') ||
-                (unit != 'm' && unit != 'h' && unit != 'd' && unit != 'w')
+                (unit != 'm' && unit != 's' && unit != 'h' && unit != 'd' && unit != 'w')
         ) {
             return -1L;
         }
 
         long time = digit - '0';
         switch (unit) {
+            case 's':
+                time *= 1000;
+                break;
             case 'm':
                 time *= 60_000;
                 break;
@@ -508,6 +561,8 @@ public class BanAllLangInterpreter {
     }
     
     private BanAllFunctionResult invokeFunction(String name, boolean inNewThread, String threadName) {
+        // TODO: Please help (4/4)
+
         if (!importedBanall) {
             return new BanAllException(
                     "banall.runtime.BanAllPackageIsNotIncludedError",

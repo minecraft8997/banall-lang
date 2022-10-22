@@ -1,5 +1,8 @@
 # The BanAll Programming Language<br><sup>Version 0.1.0a</sup>
 
+![jenkins](https://img.shields.io/badge/Jenkins-What%20is%20that-red) ![build](https://img.shields.io/badge/Build-dying-red) ![code contains potatos](https://img.shields.io/badge/Code%20contains-potatos-blue)
+![build status](https://img.shields.io/badge/Status-You%20are%20banned%20from%20using%20the%20interpreter%20for%20another%201w-informative)
+
 # TODO: 
 
 - Write a comprehensive description
