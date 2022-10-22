@@ -23,7 +23,7 @@ public class StandardBanAllFunctions {
         "banall", "banall_thread", "banall_sleep", 
         "banall_println", "banall_printls", "banall_print", 
         "throw_banall", "return", "switch_character",
-        "ping_pandito_in_bryce_request_channel", "steal_ned_emoji"
+        "ping_pandito_in_bryce_request_channel", "steal_ned_emoji", "tempban"
     };
 
     public static List<String> functions = Arrays.asList(arrayFunctions);
