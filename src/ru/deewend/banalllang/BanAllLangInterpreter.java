@@ -619,8 +619,7 @@ public class BanAllLangInterpreter {
 
     private synchronized BanAllFunction lookupFunction(String name) {
         for (BanAllFunction function : functionList) {
-            if (function.getName().equals(name))
-                return function;
+            if (function.getName().equals(name)) return function;
         }
 
         return null;

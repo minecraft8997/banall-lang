@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 public class StandardBanAllFunctions {
     private static final Object CHAT_SIMULATION_LOCK = new Object();
     private static final Set<String> BANNED = new HashSet<>();
-    private static volatile String currentCharacter;
-    private static volatile long lastCalledBanAll;
+    private static String currentCharacter;
+    private static long lastTimeCalledBanAllFunction;
 
     // TODO: Eventually entirely remove this and autogenerate it via reflections
     private static final String[] STANDARD_FUNCTIONS_ARRAY = {
@@ -35,42 +35,40 @@ public class StandardBanAllFunctions {
 
     private StandardBanAllFunctions() {}
 
-    public static BanAllFunctionResult banall() {
-        synchronized (StandardBanAllFunctions.class) {
-            long currentTimeMillis = System.currentTimeMillis();
-            if (currentTimeMillis < lastCalledBanAll + 60_000L) {
-                return println(
-                        "You must wait " + TimeUnit.MILLISECONDS.toSeconds(
-                                (lastCalledBanAll + 60_000L) - currentTimeMillis) +
-                        " seconds before using this command."
-                );
-            }
+    public static synchronized BanAllFunctionResult banall() {
+        long currentTimeMillis = System.currentTimeMillis();
+        if (currentTimeMillis < lastTimeCalledBanAllFunction + 60_000L) {
+            return println(
+                    "You must wait " + TimeUnit.MILLISECONDS.toSeconds(
+                            (lastTimeCalledBanAllFunction + 60_000L) - currentTimeMillis) +
+                            " seconds before using this command."
+            );
+        }
 
-            double value = Math.random() * 10001.0D;
-            DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-            dfs.setDecimalSeparator('.');
-            DecimalFormat df = new DecimalFormat("0.00", dfs);
-            String formatted = df.format(value);
-            if (formatted.equals("420.69")) {
-                println((currentCharacter == null ? "YOU" : (currentCharacter + " HAS")) +
-                        " ACTIVATED THE REAL BANALL (0.01% CHANCE)." + System.lineSeparator() +
-                        "THE INTERPRETER WILL BE TERMINATED & TEMPBANNED IN 3 SECONDS.");
+        double value = Math.random() * 10000.0D;
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        DecimalFormat df = new DecimalFormat("0.00", dfs);
+        String formatted = df.format(value);
+        if (formatted.equals("420.69")) {
+            println((currentCharacter == null ? "YOU" : (currentCharacter + " HAS")) +
+                    " ACTIVATED THE REAL BANALL (0.01% CHANCE)." + System.lineSeparator() +
+                    "THE INTERPRETER WILL BE TERMINATED & TEMPBANNED IN 3 SECONDS.");
 
-                sleep(3000L);
+            sleep(3000L);
 
-                BanAllLangInterpreter.BAN("1d", "1d BANALL" +
-                        (currentCharacter == null ? "" : (" by " + currentCharacter)));
-                System.exit(0);
+            BanAllLangInterpreter.BAN("1d", "1d BANALL" +
+                    (currentCharacter == null ? "" : (" by " + currentCharacter)));
+            System.exit(0);
 
-                return new BanAllEmptyResult();
-            } else {
-                String message = "Real BanAll chance calculated: " + formatted + ". Needed: 420.69";
-                if (currentCharacter != null) message = currentCharacter + ": " + message;
+            return new BanAllEmptyResult();
+        } else {
+            String message = "Real BanAll chance calculated: " + formatted + ". Needed: 420.69";
+            if (currentCharacter != null) message = currentCharacter + ": " + message;
 
-                lastCalledBanAll = System.currentTimeMillis();
+            lastTimeCalledBanAllFunction = System.currentTimeMillis();
 
-                return println(message);
-            }
+            return println(message);
         }
     }
 
@@ -149,10 +147,9 @@ public class StandardBanAllFunctions {
                         "character \"" + currentCharacter + "\" is banned from #bryce-request channel"
                 );
             }
-
             BANNED.add(currentCharacter);
-            return println("Character \"" +
-                    currentCharacter + "\" is now banned from #bryce-request channel :(");
+
+            return println("Character \"" + currentCharacter + "\" is now banned from #bryce-request channel :(");
         }
     }
 
