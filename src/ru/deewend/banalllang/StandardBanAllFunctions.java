@@ -6,11 +6,8 @@ import ru.deewend.banalllang.funcresult.BanAllFunctionResult;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.Arrays;
 
 public class StandardBanAllFunctions {
     private static final Object CHAT_SIMULATION_LOCK = new Object();
@@ -18,16 +15,23 @@ public class StandardBanAllFunctions {
     private static volatile String currentCharacter;
     private static volatile long lastCalledBanAll;
 
-    // TODO: Eventually entierly remove this and autogenerate it via reflections
-    private static String[] arrayFunctions = {
-        "banall", "banall_thread", "banall_sleep", 
-        "banall_println", "banall_printls", "banall_print", 
-        "throw_banall", "return", "switch_character",
-        "ping_pandito_in_bryce_request_channel", "steal_ned_emoji", "tempban"
+    // TODO: Eventually entirely remove this and autogenerate it via reflections
+    private static final String[] STANDARD_FUNCTIONS_ARRAY = {
+            "banall",
+            "banall_thread",
+            "banall_sleep",
+            "banall_println",
+            "banall_printls",
+            "banall_print",
+            "throw_banall",
+            "return",
+            "switch_character",
+            "ping_pandito_in_bryce_request_channel",
+            "steal_ned_emoji",
+            "tempban"
     };
 
-    public static List<String> functions = Arrays.asList(arrayFunctions);
-
+    public static final List<String> FUNCTIONS = Collections.unmodifiableList(Arrays.asList(STANDARD_FUNCTIONS_ARRAY));
 
     private StandardBanAllFunctions() {}
 

@@ -1,7 +1,7 @@
 package ru.deewend.banalllang.funcresult;
 
 public class BanAllReturnStatement extends BanAllFunctionResult {
-    private BanAllFunctionResult returnValue;
+    private final BanAllFunctionResult returnValue;
 
     public BanAllReturnStatement(BanAllFunctionResult returnValue) {
         this.returnValue = returnValue;
